@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-website-link.com/"> 
+    <meta property="og:title" content="كل الأخبار">
+    <meta property="og:description" content="أخبار.دراسات.أبحاث.ترجمة">
+    <meta property="og:image" content="https://lh3.googleusercontent.com/d/16VngZvvfrCW6odFd8qSpW8fR9_H6XdGW">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كل الأخبار</title>
+
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; }
+        
+        .container { max-width: 900px; margin: auto; padding: 20px; }
+
+        .fixed-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: #0d1117;
+            padding: 20px 20px 10px 20px;
+        }
+
+        .banner-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 15px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #30363d;
+        }
+        .banner-container img { width: 100%; height: auto; display: block; }
+
+        .search-container { 
+            width: 100%;
+            max-width: 900px;
+            margin: auto;
+        }
+        
+        .search-box { 
+            width: 100%; padding: 15px 20px; border-radius: 10px; border: 1px solid #30363d; 
+            background: #161b22; color: #c9d1d9; font-size: 18px; box-sizing: border-box; outline: none; 
+        }
+
+        .card { 
+            background: #161b22; border: 1px solid #30363d; border-radius: 12px; 
+            padding: 20px; margin-bottom: 20px; border-right: 5px solid #c28a29; 
+            overflow: hidden;
+        }
+
+        .date-badge { 
+            background: #c28a29; padding: 4px 12px; border-radius: 15px; 
+            color: #0d1117; font-size: 12px; font-weight: bold; float: left; 
+        }
+
+        .country-badge { background: #1b4a80; color: #fff; padding: 4px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
+        
+        .title { color: #c28a29; font-size: 20px; margin: 15px 0 10px 0; font-weight: bold; clear: both; }
+        
+        /* --- تنسيق الصورة داخل البطاقة (حجم موحد) --- */
+        .card-image {
+            width: 100%;
+            height: 250px; /* توحيد الطول */
+            object-fit: cover; /* لضمان عدم تمدد الصورة وقصها بشكل متناسق */
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #30363d;
+            display: block;
+        }
+
+        .content { font-size: 15px; line-height: 1.6; color: #d1d7de; }
+        
+        #status { text-align: center; padding: 20px; color: #8b949e; }
+        #load-more { text-align: center; padding: 20px; display: none; cursor: pointer; color: #58a6ff; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="fixed-header">
+        <div class="banner-container">
+            <img src="https://lh3.googleusercontent.com/d/16VngZvvfrCW6odFd8qSpW8fR9_H6XdGW" alt="Banner">
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-box" placeholder="🔍 ابحث هنا..." onkeyup="handleSearch()">
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="archive-container"></div>
+        <div id="status">جاري التحميل...</div>
+        <div id="load-more" onclick="renderNextBatch()">👇 عرض المزيد من الأخبار</div>
+    </div>
+
+    <script>
+        const SHEET_ID = '1-j08dJ4bUh4kwKX5Tc__KobBMEBhgP8BoHQerTENn4Y';
+        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
+        
+        let allData = [];
+        let filteredData = [];
+        let currentIndex = 0;
+        const BATCH_SIZE = 20;
+
+        async function fetchData() {
+            try {
+                const response = await fetch(CSV_URL);
+                const csvText = await response.text();
+                const rows = csvText.split('\n').map(row => {
+                    return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => cell.replace(/"/g, '').trim());
+                });
+
+                allData = rows.slice(1).filter(r => r[0] && r[1]).map(r => ({
+                    country: r[0], 
+                    title: r[1], 
+                    content: r[2] || "",
+                    dateText: r[3], 
+                    sortKey: r[3] ? r[3].split('/').reverse().join('') : '0',
+                    // جلب الصورة من العمود السابع (Index 6)
+                    imageUrl: r[6] || "" 
+                }));
+
+                allData.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
+                filteredData = [...allData];
+                
+                document.getElementById('status').style.display = 'none';
+                renderNextBatch(true);
+
+            } catch (e) {
+                document.getElementById('status').innerText = "خطأ في الاتصال.";
+            }
+        }
+
+        function renderNextBatch(reset = false) {
+            const container = document.getElementById('archive-container');
+            if (reset) {
+                container.innerHTML = "";
+                currentIndex = 0;
+            }
+
+            const nextBatch = filteredData.slice(currentIndex, currentIndex + BATCH_SIZE);
+            let html = "";
+            nextBatch.forEach(item => {
+                // التحقق من وجود صورة لعرض الوسم الخاص بها
+                const imgTag = item.imageUrl ? `<img src="${item.imageUrl}" class="card-image" loading="lazy" alt="news">` : "";
+
+                html += `
+                    <div class="card">
+                        <span class="date-badge">📅 ${item.dateText}</span>
+                        <span class="country-badge">🌍 ${item.country}</span>
+                        <div class="title">${item.title}</div>
+                        ${imgTag}
+                        <div class="content">${item.content}</div>
+                    </div>`;
+            });
+
+            container.insertAdjacentHTML('beforeend', html);
+            currentIndex += BATCH_SIZE;
+            document.getElementById('load-more').style.display = currentIndex < filteredData.length ? 'block' : 'none';
+        }
+
+        function handleSearch() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            filteredData = allData.filter(item => 
+                item.country.toLowerCase().includes(term) || 
+                item.title.toLowerCase().includes(term) || 
+                item.content.toLowerCase().includes(term)
+            );
+            renderNextBatch(true);
+        }
+
+        window.onscroll = function() {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                if (currentIndex < filteredData.length) renderNextBatch();
+            }
+        };
+
+        fetchData();
+    </script>
+</body>
+</html>
