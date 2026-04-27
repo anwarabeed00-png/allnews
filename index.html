@@ -3,136 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>المنصة الإخبارية والبحثية</title>
-    
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="منصة الأخبار والدراسات">
-    <meta property="og:image" content="https://lh3.googleusercontent.com/d/1q4oBsw_3sRpsDbWOU9uzmQ9nKtmS1rf1">
-
+    <title>منصة كل الأخبار</title>
     <style>
         :root { --main-width: 900px; --gold: #c28a29; --bg: #0d1117; --card-bg: #161b22; --border: #30363d; }
-
         body { background-color: var(--bg); color: #c9d1d9; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         
-        /* --- شريط التنقل العلوي --- */
         .nav-bar {
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 10px 0;
-            position: sticky;
-            top: 0;
-            z-index: 2000;
+            background: var(--card-bg); border-bottom: 1px solid var(--border);
+            display: flex; justify-content: center; gap: 8px; padding: 12px 5px;
+            position: sticky; top: 0; z-index: 2000; min-height: 45px; align-items: center;
+            flex-wrap: wrap;
         }
-
         .nav-btn {
-            background: transparent;
-            border: 2px solid transparent;
-            color: #8b949e;
-            padding: 8px 25px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
+            background: transparent; border: 2px solid transparent; color: #8b949e;
+            padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s;
+            font-size: 13px; white-space: nowrap;
+        }
+        .nav-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(194, 138, 41, 0.1); }
+
+        .ticker-wrap {
+            width: 100%; overflow: hidden; background-color: #1c2128; border-bottom: 2px solid var(--gold);
+            height: 45px; position: sticky; top: 60px; z-index: 1999; display: flex; align-items: center;
         }
 
-        .nav-btn.active {
-            border-color: var(--gold);
-            color: var(--gold);
-            background: rgba(194, 138, 41, 0.1);
-        }
-
-        /* --- تنسيق صفحة الدخول --- */
         #login-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--bg); display: flex; flex-direction: column; 
-            align-items: center; justify-content: flex-start; z-index: 9999; 
-            padding-top: 50px;
+            align-items: center; justify-content: flex-start; z-index: 9999; padding-top: 50px;
         }
-        
         .content-wrapper { width: 95%; max-width: var(--main-width); margin: 0 auto; }
-
-        .login-card { 
-            background: var(--card-bg); padding: 30px; border-radius: 12px; 
-            border: 1px solid var(--border); width: 100%; max-width: 400px; 
-            text-align: center; margin-top: 20px; box-sizing: border-box;
-        }
-        
-        .login-card input { 
-            width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; 
-            border: 1px solid var(--border); background: var(--bg); color: white; 
-            box-sizing: border-box; 
-        }
-        
-        .login-btn { 
-            width: 100%; padding: 12px; background: var(--gold); color: var(--bg); 
-            border: none; border-radius: 8px; font-weight: bold; cursor: pointer; 
-        }
+        .login-card { background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border); width: 100%; max-width: 400px; text-align: center; margin-top: 20px; box-sizing: border-box; }
+        .login-card input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: white; box-sizing: border-box; }
+        .login-btn { width: 100%; padding: 12px; background: var(--gold); color: var(--bg); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
         #main-content { display: none; }
-
-        /* --- أقسام المحتوى --- */
-        .page-section { display: none; padding-top: 20px; }
+        .page-section { display: none; padding-top: 20px; text-align: center; }
         .page-section.active { display: block; }
+        
+        .empty-state { padding: 50px; color: #8b949e; font-style: italic; }
 
-        /* --- شريط الأخبار --- */
-        .ticker-wrap {
-            width: 100%; overflow: hidden; background-color: #1c2128; border-bottom: 2px solid var(--gold); height: 45px;
-            position: relative; display: flex; align-items: center; margin-bottom: 15px;
-        }
-
-        .ticker-label {
-            position: absolute; right: 0; top: 0; bottom: 0;
-            background: var(--gold); color: var(--bg); padding: 0 15px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; z-index: 100; white-space: nowrap;
-        }
-
+        .ticker-label { position: absolute; right: 0; top: 0; bottom: 0; background: var(--gold); color: var(--bg); padding: 0 15px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 100; white-space: nowrap; }
         .ticker-scroll-area { width: 100%; height: 100%; overflow: hidden; position: relative; }
-        .ticker-content {
-            display: flex; white-space: nowrap; position: absolute;
-            right: 0; top: 0; bottom: 0; align-items: center;
-            animation: ticker-loop 80s linear infinite;
-        }
+        .ticker-content { display: flex; white-space: nowrap; position: absolute; right: 0; top: 0; bottom: 0; align-items: center; animation: ticker-loop 80s linear infinite; }
         .ticker-item { display: inline-block; padding: 0 35px; font-size: 16px; color: #fff; direction: rtl; }
         .ticker-item b { color: var(--gold); margin-left: 5px; }
 
         @keyframes ticker-loop { 0% { transform: translateX(0); } 100% { transform: translateX(50%); } }
 
-        /* --- التنسيقات الموحدة --- */
         .banner-container { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 15px; box-sizing: border-box; }
         .banner-container img { width: 100%; height: auto; display: block; }
-
-        .search-box { 
-            width: 100%; padding: 15px; border-radius: 10px; border: 1px solid var(--border); 
-            background: var(--card-bg); color: white; font-size: 18px; outline: none; 
-            text-align: right; box-sizing: border-box; margin-bottom: 10px;
-        }
-
-        .card { 
-            background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; 
-            padding: 25px; margin-bottom: 20px; border-right: 5px solid var(--gold); 
-            position: relative; text-align: right; 
-        }
+        .search-box { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: white; font-size: 18px; outline: none; text-align: right; box-sizing: border-box; margin-bottom: 20px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 20px; border-right: 5px solid var(--gold); position: relative; text-align: right; }
         .date-badge { background: var(--gold); padding: 4px 12px; border-radius: 15px; color: var(--bg); font-size: 11px; font-weight: bold; position: absolute; left: 20px; top: 20px; }
-        
         .country-tag { color: var(--gold); font-size: 14px; font-weight: bold; margin-bottom: 5px; }
         .title { color: #ffffff; font-size: 20px; margin: 0 0 15px 0; font-weight: bold; padding-left: 85px; line-height: 1.4; }
         .card-image { width: 100%; border-radius: 10px; margin: 5px 0 15px 0; border: 1px solid var(--border); max-height: 450px; object-fit: cover; }
         
-        /* --- تنسيق قسم الدراسات --- */
-        .studies-container {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid var(--border);
-        }
+        .studies-container { background: var(--card-bg); padding: 20px; border-radius: 15px; border: 1px solid var(--border); }
         .studies-container h2 { color: var(--gold); text-align: center; margin-top: 0; }
         .drive-iframe { width: 100%; height: 700px; border: none; border-radius: 10px; }
-
         #loading-sentinel { text-align: center; padding: 20px; color: var(--gold); font-weight: bold; }
     </style>
 </head>
@@ -140,9 +69,7 @@
 
     <div id="login-overlay">
         <div class="content-wrapper">
-            <div class="banner-container">
-                <img src="https://lh3.googleusercontent.com/d/1q4oBsw_3sRpsDbWOU9uzmQ9nKtmS1rf1" alt="Banner">
-            </div>
+            <div class="banner-container"><img src="https://lh3.googleusercontent.com/d/1q4oBsw_3sRpsDbWOU9uzmQ9nKtmS1rf1" alt="Banner"></div>
             <div style="display: flex; justify-content: center;">
                 <div class="login-card">
                     <h2>🔐 دخول الأعضاء</h2>
@@ -157,37 +84,33 @@
 
     <div id="main-content">
         <nav class="nav-bar">
-            <button class="nav-btn active" onclick="switchTab('news-section', this)">الاخبار</button>
-            <button class="nav-btn" onclick="switchTab('studies-section', this)">الدراسات</button>
+            <button class="nav-btn active" onclick="switchTab('news-section', this)">الأخبار</button>
+            <button class="nav-btn" onclick="switchTab('studies-section', this)">دراسات وترجمة</button>
+            <button class="nav-btn" onclick="switchTab('analysis-section', this)">تحليل أخباري</button>
+            <button class="nav-btn" onclick="switchTab('opinions-section', this)">مقالات وآراء</button>
+            <button class="nav-btn" onclick="switchTab('files-section', this)">ملفات خاصة</button>
         </nav>
 
         <div id="news-section" class="page-section active">
             <div class="ticker-wrap">
                 <div class="ticker-label" id="ticker-label">آخر الأخبار</div>
-                <div class="ticker-scroll-area">
-                    <div class="ticker-content" id="ticker-content"></div>
-                </div>
+                <div class="ticker-scroll-area"><div class="ticker-content" id="ticker-content"></div></div>
             </div>
-            
-            <div class="content-wrapper">
-                <div class="banner-container">
-                    <img src="https://lh3.googleusercontent.com/d/1q4oBsw_3sRpsDbWOU9uzmQ9nKtmS1rf1" alt="Banner">
-                </div>
+            <div class="content-wrapper" style="margin-top: 20px;">
+                <div class="banner-container"><img src="https://lh3.googleusercontent.com/d/1q4oBsw_3sRpsDbWOU9uzmQ9nKtmS1rf1" alt="Banner"></div>
                 <input type="text" id="searchInput" class="search-box" placeholder="🔍 ابحث في الأخبار..." onkeyup="handleSearch()">
-                
                 <div id="archive-container"></div>
-                <div id="loading-sentinel">جاري تحميل المزيد...</div>
+                <div id="loading-sentinel">جاري التحميل...</div>
             </div>
         </div>
 
         <div id="studies-section" class="page-section">
-            <div class="content-wrapper">
-                <div class="studies-container">
-                    <h2>الدراسات والابحاث</h2>
-                    <iframe src="https://drive.google.com/embeddedfolderview?id=1-aMdM-Q8wZlR7u0NvGIZ7s8Oip7PmIOy#grid" class="drive-iframe"></iframe>
-                </div>
-            </div>
+            <div class="content-wrapper"><div class="studies-container"><h2>دراسات وترجمة</h2><iframe src="https://drive.google.com/embeddedfolderview?id=1-aMdM-Q8wZlR7u0NvGIZ7s8Oip7PmIOy#grid" class="drive-iframe"></iframe></div></div>
         </div>
+
+        <div id="analysis-section" class="page-section"><div class="content-wrapper"><div class="studies-container"><h2>تحليل أخباري</h2><div class="empty-state">قريباً..</div></div></div></div>
+        <div id="opinions-section" class="page-section"><div class="content-wrapper"><div class="studies-container"><h2>مقالات وآراء</h2><div class="empty-state">قريباً..</div></div></div></div>
+        <div id="files-section" class="page-section"><div class="content-wrapper"><div class="studies-container"><h2>ملفات خاصة</h2><div class="empty-state">قريباً..</div></div></div></div>
     </div>
 
     <script>
@@ -201,21 +124,18 @@
         let currentIndex = 0;
         let isLoading = false;
 
-        // تبديل التبويبات
         function switchTab(sectionId, btn) {
             document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
             document.getElementById(sectionId).classList.add('active');
             btn.classList.add('active');
-            
-            // إعادة ضبط التمرير للأعلى عند التبديل
             window.scrollTo(0, 0);
         }
 
         async function attemptLogin() {
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('password').value.trim();
+            if(!user || !pass) return;
             try {
                 const res = await fetch(USERS_CSV_URL);
                 const text = await res.text();
@@ -226,7 +146,7 @@
                     fetchData();
                     setupInfiniteScroll();
                 } else { document.getElementById('login-error').style.display = 'block'; }
-            } catch (e) { alert("خطأ في الاتصال بالسيرفر"); }
+            } catch (e) { alert("خطأ في الاتصال"); }
         }
 
         async function fetchData() {
@@ -234,60 +154,71 @@
                 const res = await fetch(CSV_URL);
                 const text = await res.text();
                 const rows = text.split('\n').map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/"/g, '').trim()));
-                allData = rows.slice(1).filter(r => r[1]).map(r => ({
-                    country: r[0], title: r[1], content: r[2], date: r[3],
-                    sortKey: r[3] ? r[3].split('/').reverse().join('') : '0', img: r[6]
+                
+                allData = rows.slice(1).filter(r => r[1] && r[1] !== "").map(r => ({
+                    country: r[0] || "غير معروف", 
+                    title: r[1], 
+                    content: r[2] || "", 
+                    date: r[3] || "",
+                    sortKey: r[3] ? r[3].split('/').reverse().join('') : '00000000',
+                    img: r[6] || ""
                 }));
-                allData.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
+
+                allData.sort((a, b) => {
+                    if (b.sortKey !== a.sortKey) return b.sortKey.localeCompare(a.sortKey);
+                    return a.country.localeCompare(b.country, 'ar');
+                });
+
                 filteredData = [...allData];
                 updateTicker();
                 renderNextBatch(true);
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Fetch error:", e); }
         }
 
         function updateTicker() {
             const ticker = document.getElementById('ticker-content');
             if (allData.length === 0) return;
-            const latestDate = allData[0].date;
-            const latestNews = allData.filter(item => item.date === latestDate);
+            const sortedByDate = [...allData].sort((a,b) => b.sortKey.localeCompare(a.sortKey));
+            const latestDate = sortedByDate[0].date;
+            const latestNews = sortedByDate.filter(item => item.date === latestDate);
             document.getElementById('ticker-label').innerHTML = `آخر الأخبار (${latestNews.length})`;
-            let html = "";
-            latestNews.forEach(item => { html += `<div class="ticker-item"><b>[${item.country}]</b> ${item.title}</div> • `; });
-            ticker.innerHTML = html + html; 
-            ticker.style.animationDuration = Math.max(45, latestNews.length * 15) + "s";
+            let html = latestNews.map(item => `<div class="ticker-item"><b>[${item.country}]</b> ${item.title}</div>`).join(' • ');
+            ticker.innerHTML = html + " • " + html; 
+            ticker.style.animationDuration = Math.max(30, latestNews.length * 10) + "s";
         }
 
         function renderNextBatch(reset = false) {
-            if (isLoading) return;
-            isLoading = true;
             const container = document.getElementById('archive-container');
+            const sentinel = document.getElementById('loading-sentinel');
             if (reset) { container.innerHTML = ""; currentIndex = 0; }
+            if (isLoading) return;
             
             const chunk = filteredData.slice(currentIndex, currentIndex + 10);
             if (chunk.length === 0) {
-                document.getElementById('loading-sentinel').innerHTML = currentIndex > 0 ? "نهاية الأخبار" : "لا توجد نتائج";
-                isLoading = false;
+                sentinel.innerHTML = currentIndex > 0 ? "نهاية الأخبار" : "لا توجد نتائج مطابقة";
                 return;
             }
 
-            chunk.forEach(item => {
-                container.insertAdjacentHTML('beforeend', `
-                    <div class="card">
-                        <span class="date-badge">${item.date}</span>
-                        <div class="country-tag">🌍 ${item.country}</div>
-                        <div class="title">${item.title}</div>
-                        ${item.img ? `<img src="${item.img}" class="card-image" loading="lazy">` : ""}
-                        <p>${item.content}</p>
-                    </div>`);
-            });
+            sentinel.innerHTML = "جاري تحميل المزيد...";
+            isLoading = true;
+
+            let html = chunk.map(item => `
+                <div class="card">
+                    <span class="date-badge">${item.date}</span>
+                    <div class="country-tag">🌍 ${item.country}</div>
+                    <div class="title">${item.title}</div>
+                    ${item.img ? `<img src="${item.img}" class="card-image" onerror="this.style.display='none'">` : ""}
+                    <p>${item.content}</p>
+                </div>`).join('');
+            
+            container.insertAdjacentHTML('beforeend', html);
             currentIndex += 10;
             isLoading = false;
         }
 
         function setupInfiniteScroll() {
             const observer = new IntersectionObserver((entries) => {
-                // فقط إذا كان قسم الأخبار هو النشط
-                if (entries[0].isIntersecting && !isLoading && document.getElementById('news-section').classList.contains('active')) {
+                if (entries[0].isIntersecting && !isLoading) {
                     renderNextBatch();
                 }
             }, { threshold: 0.1 });
@@ -296,7 +227,11 @@
 
         function handleSearch() {
             const term = document.getElementById('searchInput').value.toLowerCase();
-            filteredData = allData.filter(i => i.title.toLowerCase().includes(term) || i.country.toLowerCase().includes(term));
+            filteredData = allData.filter(i => 
+                i.title.toLowerCase().includes(term) || 
+                i.country.toLowerCase().includes(term) ||
+                i.content.toLowerCase().includes(term)
+            );
             renderNextBatch(true);
         }
     </script>
