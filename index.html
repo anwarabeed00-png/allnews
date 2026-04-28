@@ -5,39 +5,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصة كل الأخبار</title>
     <style>
-        :root { --main-width: 900px; --gold: #c28a29; --bg: #0d1117; --card-bg: #161b22; --border: #30363d; }
-        body { background-color: var(--bg); color: #c9d1d9; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
-        
-        .nav-bar {
-            background: var(--card-bg); border-bottom: 1px solid var(--border);
-            display: flex; justify-content: center; gap: 8px; padding: 12px 5px;
-            position: sticky; top: 0; z-index: 2000; min-height: 45px; align-items: center;
-            flex-wrap: wrap;
+        :root { 
+            --main-width: 900px; 
+            --gold: #c28a29; 
+            --bg: #0d1117; 
+            --card-bg: #161b22; 
+            --border: #30363d; 
+            --nav-height: 60px;
         }
+
+        body { 
+            background-color: var(--bg); 
+            color: #c9d1d9; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; padding: 0; overflow-x: hidden; 
+        }
+        
+        /* --- شريط التنقل العلوي المتجاوب --- */
+        .nav-bar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            height: var(--nav-height);
+            position: sticky;
+            top: 0;
+            z-index: 9999;
+        }
+
+        .nav-logo { font-weight: bold; color: var(--gold); font-size: 18px; }
+
+        /* زر القائمة للموبايل */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 10px;
+        }
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background-color: var(--gold);
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        /* حاوية الأزرار */
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
         .nav-btn {
             background: transparent; border: 2px solid transparent; color: #8b949e;
             padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s;
-            font-size: 13px; white-space: nowrap;
+            font-size: 14px; white-space: nowrap;
         }
         .nav-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(194, 138, 41, 0.1); }
 
+        /* شاشة الموبايل */
+        @media (max-width: 768px) {
+            .menu-toggle { display: flex; }
+            .nav-menu {
+                position: fixed;
+                top: var(--nav-height);
+                right: -100%;
+                flex-direction: column;
+                background: var(--card-bg);
+                width: 70%;
+                height: calc(100vh - var(--nav-height));
+                padding: 20px;
+                transition: 0.4s;
+                border-left: 1px solid var(--border);
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .nav-menu.open { right: 0; }
+            .nav-btn { width: 100%; text-align: right; border-radius: 8px; }
+        }
+
+        /* --- شريط الأخبار ثابت --- */
         .ticker-wrap {
             width: 100%; overflow: hidden; background-color: #1c2128; border-bottom: 2px solid var(--gold);
-            height: 45px; position: sticky; top: 60px; z-index: 1999; display: flex; align-items: center;
+            height: 45px; position: sticky; top: var(--nav-height); z-index: 9998; display: flex; align-items: center;
         }
 
         #login-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--bg); display: flex; flex-direction: column; 
-            align-items: center; justify-content: flex-start; z-index: 9999; padding-top: 50px;
+            align-items: center; justify-content: flex-start; z-index: 10000; padding-top: 50px;
         }
+        
         .content-wrapper { width: 95%; max-width: var(--main-width); margin: 0 auto; }
         .login-card { background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border); width: 100%; max-width: 400px; text-align: center; margin-top: 20px; box-sizing: border-box; }
         .login-card input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: white; box-sizing: border-box; }
         .login-btn { width: 100%; padding: 12px; background: var(--gold); color: var(--bg); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
         #main-content { display: none; }
-        .page-section { display: none; padding-top: 20px; text-align: center; }
+        .page-section { display: none; padding-top: 10px; text-align: center; }
         .page-section.active { display: block; }
         
         .empty-state { padding: 50px; color: #8b949e; font-style: italic; }
@@ -84,11 +155,21 @@
 
     <div id="main-content">
         <nav class="nav-bar">
-            <button class="nav-btn active" onclick="switchTab('news-section', this)">الأخبار</button>
-            <button class="nav-btn" onclick="switchTab('studies-section', this)">دراسات وترجمة</button>
-            <button class="nav-btn" onclick="switchTab('analysis-section', this)">تحليل أخباري</button>
-            <button class="nav-btn" onclick="switchTab('opinions-section', this)">مقالات وآراء</button>
-            <button class="nav-btn" onclick="switchTab('files-section', this)">ملفات خاصة</button>
+            <div class="nav-logo">منصة كل الأخبار</div>
+            
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="nav-menu" id="navMenu">
+                <button class="nav-btn active" onclick="switchTab('news-section', this)">الأخبار</button>
+                <button class="nav-btn" onclick="switchTab('studies-section', this)">دراسات وترجمة</button>
+                <button class="nav-btn" onclick="switchTab('analysis-section', this)">تحليل أخباري</button>
+                <button class="nav-btn" onclick="switchTab('opinions-section', this)">مقالات وآراء</button>
+                <button class="nav-btn" onclick="switchTab('files-section', this)">ملفات خاصة</button>
+            </div>
         </nav>
 
         <div id="news-section" class="page-section active">
@@ -124,11 +205,19 @@
         let currentIndex = 0;
         let isLoading = false;
 
+        // وظيفة فتح/إغلاق القائمة في الموبايل
+        function toggleMenu() {
+            document.getElementById('navMenu').classList.toggle('open');
+        }
+
         function switchTab(sectionId, btn) {
             document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
             btn.classList.add('active');
+            
+            // إغلاق القائمة بعد اختيار قسم في الموبايل
+            document.getElementById('navMenu').classList.remove('open');
             window.scrollTo(0, 0);
         }
 
@@ -199,7 +288,7 @@
                 return;
             }
 
-            sentinel.innerHTML = "جاري تحميل المزيد...";
+            sentinel.innerHTML = "جاري التحميل...";
             isLoading = true;
 
             let html = chunk.map(item => `
