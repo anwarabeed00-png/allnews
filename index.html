@@ -62,7 +62,11 @@
         .main-title { margin: 0; font-size: 24px; font-weight: 800; display: flex; gap: 8px; white-space: nowrap; }
         .orange-word { color: var(--gold); }
         .blue-word { color: white; }
-        .left-section { display: flex; justify-content: flex-end; align-items: center; }
+
+        /* تعديلات القسم الأيسر لإظهار اسم القسم */
+        .left-section { display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
+        .active-section-name { color: var(--gold); font-size: 14px; font-weight: bold; white-space: nowrap; }
+        
         .menu-toggle { display: flex; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 10px; }
         .menu-toggle span { width: 25px; height: 3px; background-color: var(--gold); border-radius: 2px; }
 
@@ -91,18 +95,18 @@
 
         @keyframes ticker-loop { 0% { transform: translateX(0); } 100% { transform: translateX(50%); } }
 
-        /* --- المحتوى (البحث والبطاقات) --- */
+        /* --- المحتوى --- */
         .content-wrapper { 
             width: 95%; 
             max-width: var(--main-width); 
             margin: 20px auto; 
             display: flex; 
             flex-direction: column; 
-            align-items: center; /* لضمان توسيط العناصر */
+            align-items: center; 
         }
 
         .search-box { 
-            width: 100%; /* تأخذ عرض الـ content-wrapper بالكامل */
+            width: 100%; 
             max-width: var(--main-width);
             padding: 15px; 
             border-radius: 12px; 
@@ -113,11 +117,11 @@
             outline: none; 
             text-align: right; 
             margin-bottom: 25px; 
-            box-sizing: border-box; /* هام لضمان تطابق العرض مع الـ padding */
+            box-sizing: border-box; 
         }
 
         .card { 
-            width: 100%; /* مطابقة لعرض مربع البحث */
+            width: 100%; 
             max-width: var(--main-width);
             background: var(--card-bg); 
             border: 1px solid var(--border); 
@@ -131,8 +135,8 @@
         }
 
         .card p {
-            line-height: 1.8; /* تباعد الأسطر */
-            text-align: justify; /* تنسيق الأسطر لتكون متساوية */
+            line-height: 1.8; 
+            text-align: justify; 
             color: #b2bac2;
             margin-top: 15px;
         }
@@ -152,6 +156,7 @@
             .main-title { font-size: 18px; }
             .card { padding: 20px; }
             .title { font-size: 18px; padding-left: 70px; }
+            .active-section-name { font-size: 12px; }
         }
     </style>
 </head>
@@ -205,16 +210,19 @@
                 </h1>
             </div>
             <div class="left-section">
+                <!-- إضافة النص هنا -->
+                <div id="current-section-display" class="active-section-name">أخبار ليبيا</div>
                 <button class="menu-toggle" onclick="toggleMenu()">
                     <span></span><span></span><span></span>
                 </button>
             </div>
             <div class="nav-menu" id="navMenu">
-                <button class="nav-btn active" onclick="switchTab('news-section', this)">الأخبار</button>
-                <button class="nav-btn" onclick="switchTab('studies-section', this)">دراسات وترجمة</button>
-                <button class="nav-btn" onclick="switchTab('analysis-section', this)">تحليل أخباري</button>
-                <button class="nav-btn" onclick="switchTab('opinions-section', this)">مقالات وآراء</button>
-                <button class="nav-btn" onclick="switchTab('files-section', this)">ملفات خاصة</button>
+                <button class="nav-btn active" id="libya-btn" onclick="switchNewsTab('libya', 'أخبار ليبيا')">أخبار ليبيا</button>
+                <button class="nav-btn" id="intl-btn" onclick="switchNewsTab('intl', 'الأخبار الدولية')">الأخبار الدولية</button>
+                <button class="nav-btn" onclick="switchSection('studies-section', this, 'دراسات وترجمة')">دراسات وترجمة</button>
+                <button class="nav-btn" onclick="switchSection('analysis-section', this, 'تحليل أخباري')">تحليل أخباري</button>
+                <button class="nav-btn" onclick="switchSection('opinions-section', this, 'مقالات وآراء')">مقالات وآراء</button>
+                <button class="nav-btn" onclick="switchSection('files-section', this, 'ملفات خاصة')">ملفات خاصة</button>
             </div>
         </header>
 
@@ -233,6 +241,9 @@
             <div id="studies-section" class="page-section" style="width: 100%;">
                 <div class="card"><h2>دراسات وترجمة</h2><iframe src="https://drive.google.com/embeddedfolderview?id=1-aMdM-Q8wZlR7u0NvGIZ7s8Oip7PmIOy#grid" style="width:100%; height:600px; border:none;"></iframe></div>
             </div>
+            <div id="analysis-section" class="page-section"><div style="padding:50px; text-align:center; color:#8b949e;">قريباً.. تحليل أخباري</div></div>
+            <div id="opinions-section" class="page-section"><div style="padding:50px; text-align:center; color:#8b949e;">قريباً.. مقالات وآراء</div></div>
+            <div id="files-section" class="page-section"><div style="padding:50px; text-align:center; color:#8b949e;">قريباً.. ملفات خاصة</div></div>
         </main>
     </div>
 
@@ -244,16 +255,41 @@
 
         let allData = [];
         let filteredData = [];
+        let currentMode = 'libya'; 
         let currentIndex = 0;
         let isLoading = false;
 
         function toggleMenu() { document.getElementById('navMenu').classList.toggle('open'); }
 
-        function switchTab(sectionId, btn) {
+        // تم تعديل الدالة لتحديث النص
+        function updateSectionDisplay(name) {
+            document.getElementById('current-section-display').innerText = name;
+        }
+
+        function switchSection(sectionId, btn, sectionName) {
             document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
             btn.classList.add('active');
+            
+            updateSectionDisplay(sectionName); // تحديث الاسم
+            
+            document.getElementById('navMenu').classList.remove('open');
+            window.scrollTo(0, 0);
+        }
+
+        function switchNewsTab(mode, sectionName) {
+            currentMode = mode;
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('news-section').classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if(mode === 'libya') document.getElementById('libya-btn').classList.add('active');
+            else document.getElementById('intl-btn').classList.add('active');
+
+            updateSectionDisplay(sectionName); // تحديث الاسم
+            
+            applyFilter();
             document.getElementById('navMenu').classList.remove('open');
             window.scrollTo(0, 0);
         }
@@ -269,7 +305,7 @@
                 if (rows.find(r => r[0] === user && r[1] === pass)) {
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('main-content').style.display = 'block';
-                    fetchData();
+                    await fetchData();
                     setupInfiniteScroll();
                 } else { document.getElementById('login-error').style.display = 'block'; }
             } catch (e) { alert("خطأ في الاتصال بقاعدة البيانات"); }
@@ -295,10 +331,29 @@
                     return a.country.localeCompare(b.country, 'ar');
                 });
 
-                filteredData = [...allData];
+                applyFilter();
                 updateTicker();
-                renderNextBatch(true);
             } catch (e) { console.error(e); }
+        }
+
+        function applyFilter() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredData = allData.filter(item => {
+                const matchesSearch = item.title.toLowerCase().includes(searchTerm) || 
+                                    item.country.toLowerCase().includes(searchTerm) ||
+                                    item.content.toLowerCase().includes(searchTerm);
+                
+                if (currentMode === 'libya') {
+                    const isAboutLibya = item.country.includes('ليبيا') || 
+                                       item.title.includes('ليبيا') || 
+                                       item.content.includes('ليبيا');
+                    return matchesSearch && isAboutLibya;
+                }
+                return matchesSearch; 
+            });
+
+            renderNextBatch(true);
         }
 
         function updateTicker() {
@@ -325,7 +380,7 @@
             
             const chunk = filteredData.slice(currentIndex, currentIndex + 10);
             if (chunk.length === 0) {
-                sentinel.innerHTML = currentIndex > 0 ? "نهاية الأرشيف" : "لا توجد نتائج";
+                sentinel.innerHTML = currentIndex > 0 ? "نهاية الأرشيف" : "لا توجد أخبار حالياً";
                 return;
             }
 
@@ -353,12 +408,7 @@
         }
 
         function handleSearch() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            filteredData = allData.filter(i => 
-                i.title.toLowerCase().includes(term) || 
-                i.country.toLowerCase().includes(term)
-            );
-            renderNextBatch(true);
+            applyFilter();
         }
     </script>
 </body>
