@@ -11,24 +11,15 @@
             --bg: #0d1117; 
             --card-bg: #161b22; 
             --border: #30363d; 
-            --nav-height: 85px;
+            --nav-height: 90px;
             --main-blue: #1d355d;
-            --light-blue: #58a6ff;
+            --link-blue: #58a6ff; 
         }
 
-        body { 
-            background-color: var(--bg); 
-            color: #c9d1d9; 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            margin: 0; padding: 0; overflow-x: hidden; 
-        }
+        body { background-color: var(--bg); color: #c9d1d9; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
 
         /* --- صفحة الدخول --- */
-        #login-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: radial-gradient(circle at center, #1c2128 0%, #0d1117 100%);
-            display: flex; align-items: center; justify-content: center; z-index: 10000; 
-        }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1c2128 0%, #0d1117 100%); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .login-card { background: var(--card-bg); padding: 0 0 30px 0; border-radius: 16px; border: 1px solid var(--border); width: 90%; max-width: 400px; text-align: center; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .login-banner { background: white; padding: 25px; border-bottom: 4px solid var(--gold); margin-bottom: 25px; display: flex; flex-direction: column; align-items: center; }
         .logo-box { display: flex; flex-direction: column; align-items: center; gap: 5px; }
@@ -39,111 +30,73 @@
         .login-title-ar { display: flex; gap: 8px; font-size: 28px; font-weight: 800; margin-top: 10px; }
         .login-inputs-container { padding: 0 30px; }
         .login-card input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: #0d1117; color: white; box-sizing: border-box; font-size: 16px; }
-        .login-btn { width: 100%; padding: 14px; background: var(--gold); color: #000; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 17px; margin-top: 15px; transition: 0.3s; }
+        .login-btn { width: 100%; padding: 14px; background: var(--gold); color: #000; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 17px; margin-top: 15px; }
 
-        /* --- القائمة العلوية --- */
-        .nav-bar {
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border);
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            padding: 0 30px;
-            height: var(--nav-height);
-            position: sticky;
-            top: 0;
-            z-index: 9999;
+        /* --- الهيدر العلوي --- */
+        .nav-bar { 
+            background: var(--card-bg); 
+            border-bottom: 1px solid var(--border); 
+            display: grid; 
+            grid-template-columns: 1fr auto 1fr; 
+            align-items: center; 
+            padding: 0 30px; 
+            height: var(--nav-height); 
+            position: sticky; 
+            top: 0; 
+            z-index: 9999; 
         }
-        .right-section { display: flex; align-items: center; }
+
+        .right-section { display: flex; justify-content: flex-start; align-items: center; }
         .logo-header-box { display: flex; flex-direction: column; align-items: center; }
-        .logo-header-box svg { width: 40px; height: 40px; }
-        .logo-header-box .brand-en-sub { font-size: 10px; }
-        .center-section { display: flex; justify-content: center; }
-        .main-title { margin: 0; font-size: 24px; font-weight: 800; display: flex; gap: 8px; white-space: nowrap; }
+        .logo-header-box svg { width: 38px; height: 38px; }
+        .logo-header-box .brand-en-sub { font-size: 9px; font-weight: bold; margin-top: 2px; }
+
+        .center-section { display: flex; justify-content: center; align-items: center; }
+        .main-title { margin: 0; font-size: 24px; font-weight: 800; display: flex; gap: 8px; align-items: center; } 
         .orange-word { color: var(--gold); }
         .blue-word { color: white; }
 
-        /* تعديلات القسم الأيسر لإظهار اسم القسم */
         .left-section { display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
         .active-section-name { color: var(--gold); font-size: 14px; font-weight: bold; white-space: nowrap; }
-        
         .menu-toggle { display: flex; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 10px; }
         .menu-toggle span { width: 25px; height: 3px; background-color: var(--gold); border-radius: 2px; }
 
-        .nav-menu {
-            position: fixed; top: var(--nav-height); left: -100%;
-            flex-direction: column; background: var(--card-bg);
-            width: 260px; height: calc(100vh - var(--nav-height));
-            padding: 20px; transition: 0.4s; border-right: 1px solid var(--border);
-            display: flex; gap: 10px; z-index: 9999;
-        }
+        .nav-menu { position: fixed; top: var(--nav-height); left: -100%; flex-direction: column; background: var(--card-bg); width: 260px; height: calc(100vh - var(--nav-height)); padding: 20px; transition: 0.4s; border-right: 1px solid var(--border); display: flex; gap: 10px; z-index: 9999; }
         .nav-menu.open { left: 0; }
         .nav-btn { width: 100%; background: transparent; border: 1px solid var(--border); color: #8b949e; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; text-align: right; }
         .nav-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(194, 138, 41, 0.1); }
 
-        /* --- شريط الأخبار --- */
-        .ticker-wrap {
-            width: 100%; overflow: hidden; background-color: #1c2128; border-bottom: 2px solid var(--gold);
-            height: 40px; position: sticky; top: var(--nav-height); z-index: 9990; display: flex; align-items: center;
+        /* --- شريط الأخبار المتحرك --- */
+        .ticker-wrap { 
+            width: 100%; overflow: hidden; background-color: #1c2128; border-bottom: 2px solid var(--gold); 
+            height: 40px; position: sticky; top: var(--nav-height); z-index: 9990; display: flex; align-items: center; 
         }
-        .ticker-label { position: absolute; right: 0; top: 0; bottom: 0; background: var(--gold); color: var(--bg); padding: 0 15px; display: flex; align-items: center; font-weight: bold; z-index: 100; font-size: 14px; }
+        .ticker-label { position: absolute; right: 0; top: 0; bottom: 0; background: var(--gold); color: var(--bg); padding: 0 15px; display: flex; align-items: center; font-weight: bold; z-index: 101; font-size: 14px; }
         .ticker-scroll-area { width: 100%; height: 100%; overflow: hidden; position: relative; }
-        .ticker-content { display: flex; white-space: nowrap; position: absolute; right: 0; align-items: center; height: 100%; animation: ticker-loop linear infinite; }
+        .ticker-content { 
+            display: flex; white-space: nowrap; position: absolute; right: 0; align-items: center; height: 100%; 
+            animation: ticker-loop linear infinite; 
+        }
         .ticker-content:hover { animation-play-state: paused; cursor: pointer; }
         .ticker-item { padding: 0 30px; font-size: 14px; color: #fff; }
         .ticker-country { color: var(--gold); font-weight: bold; margin-left: 8px; }
 
         @keyframes ticker-loop { 0% { transform: translateX(0); } 100% { transform: translateX(50%); } }
 
-        /* --- المحتوى --- */
-        .content-wrapper { 
-            width: 95%; 
-            max-width: var(--main-width); 
-            margin: 20px auto; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-        }
+        /* --- البطاقات --- */
+        .content-wrapper { width: 95%; max-width: var(--main-width); margin: 20px auto; display: flex; flex-direction: column; align-items: center; }
+        .search-box { width: 100%; max-width: var(--main-width); padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg); color: white; font-size: 16px; outline: none; text-align: right; margin-bottom: 25px; box-sizing: border-box; }
+        .card { width: 100%; max-width: var(--main-width); background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 25px; border-right: 5px solid var(--gold); position: relative; text-align: right; box-sizing: border-box; display: flex; flex-direction: column; }
+        .card p { line-height: 1.8; text-align: justify; color: #b2bac2; margin-top: 15px; margin-bottom: 45px; }
 
-        .search-box { 
-            width: 100%; 
-            max-width: var(--main-width);
-            padding: 15px; 
-            border-radius: 12px; 
-            border: 1px solid var(--border); 
-            background: var(--card-bg); 
-            color: white; 
-            font-size: 16px; 
-            outline: none; 
-            text-align: right; 
-            margin-bottom: 25px; 
-            box-sizing: border-box; 
-        }
-
-        .card { 
-            width: 100%; 
-            max-width: var(--main-width);
-            background: var(--card-bg); 
-            border: 1px solid var(--border); 
-            border-radius: 12px; 
-            padding: 25px; 
-            margin-bottom: 25px; 
-            border-right: 5px solid var(--gold); 
-            position: relative; 
-            text-align: right; 
-            box-sizing: border-box;
-        }
-
-        .card p {
-            line-height: 1.8; 
-            text-align: justify; 
-            color: #b2bac2;
-            margin-top: 15px;
-        }
+        .card-footer { display: flex; justify-content: flex-start; width: 100%; position: absolute; bottom: 20px; right: 25px; font-size: 14px; direction: rtl; }
+        .more-prefix { color: var(--link-blue); margin-left: 5px; font-weight: bold; }
+        .card-more-link { color: var(--link-blue); text-decoration: none; font-weight: bold; transition: 0.3s; }
+        .card-more-link:hover { text-decoration: underline; }
 
         .date-badge { background: var(--gold); padding: 4px 12px; border-radius: 15px; color: var(--bg); font-size: 11px; font-weight: bold; position: absolute; left: 20px; top: 20px; }
         .country-tag { color: var(--gold); font-size: 14px; font-weight: bold; margin-bottom: 8px; }
-        .title { color: #ffffff; font-size: 20px; margin: 0 0 15px 0; font-weight: bold; padding-left: 85px; line-height: 1.4; }
+        .title { color: #ffffff; font-size: 20px; margin: 0 0 15px 0; font-weight: bold; padding-left: 85px; }
         .card-image { width: 100%; border-radius: 10px; margin: 15px 0; max-height: 480px; object-fit: cover; border: 1px solid var(--border); }
         
         #main-content { display: none; }
@@ -151,13 +104,7 @@
         .page-section.active { display: block; }
         #loading-sentinel { text-align: center; padding: 20px; color: var(--gold); font-weight: bold; }
 
-        @media (max-width: 600px) {
-            .nav-bar { padding: 0 10px; }
-            .main-title { font-size: 18px; }
-            .card { padding: 20px; }
-            .title { font-size: 18px; padding-left: 70px; }
-            .active-section-name { font-size: 12px; }
-        }
+        @media (max-width: 600px) { .nav-bar { padding: 0 10px; } .main-title { font-size: 18px; } .title { padding-left: 70px; } .active-section-name { display: none; } }
     </style>
 </head>
 <body>
@@ -171,17 +118,11 @@
                         <path d="M 25 70 Q 50 40 85 45" fill="none" stroke="#c28a29" stroke-width="8" stroke-linecap="round"/>
                         <ellipse cx="50" cy="50" rx="15" ry="40" fill="none" stroke="#1d355d" stroke-width="1.5"/>
                     </svg>
-                    <div class="brand-en-sub">
-                        <span class="all">ALL</span> <span class="news">NEWS</span>
-                    </div>
+                    <div class="brand-en-sub"><span class="all">ALL</span> <span class="news">NEWS</span></div>
                 </div>
-                <div class="login-title-ar">
-                    <span style="color: #c28a29;">كل</span>
-                    <span style="color: #1d355d;">الأخبار</span>
-                </div>
+                <div class="login-title-ar"><span style="color: #c28a29;">كل</span> <span style="color: #1d355d;">الأخبار</span></div>
             </div>
             <div class="login-inputs-container">
-                <h3 style="margin-top: 0; color: #8b949e; font-size: 14px;">🔐 دخول الأعضاء</h3>
                 <input type="text" id="username" placeholder="اسم المستخدم">
                 <input type="password" id="password" placeholder="كلمة المرور">
                 <button class="login-btn" onclick="attemptLogin()">دخول للمنصة</button>
@@ -194,27 +135,16 @@
         <header class="nav-bar">
             <div class="right-section">
                 <div class="logo-header-box">
-                    <svg viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="45" fill="none" stroke="#58a6ff" stroke-width="4"/>
-                        <path d="M 25 70 Q 50 40 85 45" fill="none" stroke="#c28a29" stroke-width="8" stroke-linecap="round"/>
-                    </svg>
-                    <div class="brand-en-sub">
-                        <span class="all">ALL</span> <span class="news" style="color:#58a6ff">NEWS</span>
-                    </div>
+                    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="#58a6ff" stroke-width="4"/><path d="M 25 70 Q 50 40 85 45" fill="none" stroke="#c28a29" stroke-width="8" stroke-linecap="round"/></svg>
+                    <div class="brand-en-sub"><span class="all">ALL</span> <span class="news" style="color:#58a6ff">NEWS</span></div>
                 </div>
             </div>
             <div class="center-section">
-                <h1 class="main-title">
-                    <span class="orange-word">كل</span>
-                    <span class="blue-word">الأخبار</span>
-                </h1>
+                <h1 class="main-title"><span class="orange-word">كل</span> <span class="blue-word">الأخبار</span></h1>
             </div>
             <div class="left-section">
-                <!-- إضافة النص هنا -->
                 <div id="current-section-display" class="active-section-name">أخبار ليبيا</div>
-                <button class="menu-toggle" onclick="toggleMenu()">
-                    <span></span><span></span><span></span>
-                </button>
+                <button class="menu-toggle" onclick="toggleMenu()"><span></span><span></span><span></span></button>
             </div>
             <div class="nav-menu" id="navMenu">
                 <button class="nav-btn active" id="libya-btn" onclick="switchNewsTab('libya', 'أخبار ليبيا')">أخبار ليبيا</button>
@@ -234,10 +164,9 @@
         <main class="content-wrapper">
             <div id="news-section" class="page-section active" style="width: 100%;">
                 <input type="text" id="searchInput" class="search-box" placeholder="🔍 ابحث في العناوين أو الدول..." onkeyup="handleSearch()">
-                <div id="archive-container" style="width: 100%;"></div>
+                <div id="archive-container"></div>
                 <div id="loading-sentinel">جاري تحميل الأخبار...</div>
             </div>
-            
             <div id="studies-section" class="page-section" style="width: 100%;">
                 <div class="card"><h2>دراسات وترجمة</h2><iframe src="https://drive.google.com/embeddedfolderview?id=13Ogek-OO2NJelug7FmgdjUfKj6mMF7kA#grid" style="width:100%; height:600px; border:none;"></iframe></div>
             </div>
@@ -253,45 +182,35 @@
         const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
         const USERS_CSV_URL = `https://docs.google.com/spreadsheets/d/${USERS_SHEET_ID}/export?format=csv`;
 
-        let allData = [];
-        let filteredData = [];
-        let currentMode = 'libya'; 
-        let currentIndex = 0;
-        let isLoading = false;
+        let allData = []; let filteredData = []; let currentMode = 'libya'; let currentIndex = 0; let isLoading = false;
 
         function toggleMenu() { document.getElementById('navMenu').classList.toggle('open'); }
-
-        // تم تعديل الدالة لتحديث النص
-        function updateSectionDisplay(name) {
-            document.getElementById('current-section-display').innerText = name;
-        }
+        function updateSectionDisplay(name) { document.getElementById('current-section-display').innerText = name; }
 
         function switchSection(sectionId, btn, sectionName) {
             document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
-            btn.classList.add('active');
-            
-            updateSectionDisplay(sectionName); // تحديث الاسم
-            
+            btn.classList.add('active'); updateSectionDisplay(sectionName);
             document.getElementById('navMenu').classList.remove('open');
-            window.scrollTo(0, 0);
         }
 
+        // تم تعديل هذه الدالة لتصفير العرض عند كل تبديل
         function switchNewsTab(mode, sectionName) {
             currentMode = mode;
+            currentIndex = 0; // تصفير المؤشر للبدء من أول خبر
+            document.getElementById('archive-container').innerHTML = ""; // مسح البطاقات الحالية فوراً
+            
             document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
             document.getElementById('news-section').classList.add('active');
-            
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             if(mode === 'libya') document.getElementById('libya-btn').classList.add('active');
             else document.getElementById('intl-btn').classList.add('active');
-
-            updateSectionDisplay(sectionName); // تحديث الاسم
             
-            applyFilter();
+            updateSectionDisplay(sectionName); 
+            applyFilter(); // سيقوم بتحميل أول 10 بطاقات من البداية
             document.getElementById('navMenu').classList.remove('open');
-            window.scrollTo(0, 0);
+            window.scrollTo(0, 0); // العودة لأعلى الصفحة
         }
 
         async function attemptLogin() {
@@ -305,54 +224,48 @@
                 if (rows.find(r => r[0] === user && r[1] === pass)) {
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('main-content').style.display = 'block';
-                    await fetchData();
-                    setupInfiniteScroll();
+                    await fetchData(); setupInfiniteScroll();
                 } else { document.getElementById('login-error').style.display = 'block'; }
-            } catch (e) { alert("خطأ في الاتصال بقاعدة البيانات"); }
+            } catch (e) { alert("خطأ في الاتصال"); }
         }
 
         async function fetchData() {
             try {
                 const res = await fetch(CSV_URL);
                 const text = await res.text();
-                const rows = text.split('\n').map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/"/g, '').trim()));
-                
-                allData = rows.slice(1).filter(r => r[1] && r[1] !== "").map(r => ({
-                    country: r[0] || "عالمي", 
-                    title: r[1], 
-                    content: r[2] || "", 
-                    date: r[3] || "",
-                    sortKey: r[3] ? r[3].split('/').reverse().join('') : '00000000',
-                    img: r[6] || ""
-                }));
-
-                allData.sort((a, b) => {
-                    if (b.sortKey !== a.sortKey) return b.sortKey.localeCompare(a.sortKey);
-                    return a.country.localeCompare(b.country, 'ar');
+                const rows = text.split('\n').map(row => {
+                    const result = []; let current = ''; let inQuotes = false;
+                    for (let char of row) {
+                        if (char === '"') inQuotes = !inQuotes;
+                        else if (char === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+                        else current += char;
+                    }
+                    result.push(current.trim()); return result;
                 });
-
-                applyFilter();
-                updateTicker();
+                allData = rows.slice(1).filter(r => r[1]).map(r => ({
+                    country: r[0] || "عالمي", title: r[1] || "", content: r[2] || "", date: r[3] || "",
+                    linkText: r[4] || "المزيد", linkURL: r[5] || "", img: r[6] || "",
+                    sortKey: r[3] ? r[3].split('/').reverse().join('') : '00000000'
+                }));
+                applyFilter(); updateTicker();
             } catch (e) { console.error(e); }
         }
 
         function applyFilter() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
             filteredData = allData.filter(item => {
                 const matchesSearch = item.title.toLowerCase().includes(searchTerm) || 
                                     item.country.toLowerCase().includes(searchTerm) ||
                                     item.content.toLowerCase().includes(searchTerm);
-                
                 if (currentMode === 'libya') {
-                    const isAboutLibya = item.country.includes('ليبيا') || 
-                                       item.title.includes('ليبيا') || 
-                                       item.content.includes('ليبيا');
-                    return matchesSearch && isAboutLibya;
+                    return matchesSearch && (item.country.includes('ليبيا') || item.title.includes('ليبيا') || item.content.includes('ليبيا'));
                 }
                 return matchesSearch; 
             });
-
+            filteredData.sort((a, b) => {
+                if (b.sortKey !== a.sortKey) return b.sortKey.localeCompare(a.sortKey);
+                return a.country.localeCompare(b.country, 'ar');
+            });
             renderNextBatch(true);
         }
 
@@ -363,13 +276,9 @@
             const latestDate = sorted[0].date;
             const latestNews = sorted.filter(item => item.date === latestDate);
             document.getElementById('ticker-label').innerHTML = `آخر الأخبار (${latestNews.length})`;
-            
             let html = latestNews.map(item => `<div class="ticker-item"><span class="ticker-country">${item.country}</span> ${item.title}</div>`).join(' • ');
             ticker.innerHTML = html + " • " + html; 
-
-            const totalChars = ticker.innerText.length;
-            const speed = totalChars / 15; 
-            ticker.style.animationDuration = speed + "s";
+            ticker.style.animationDuration = (ticker.innerText.length / 15) + "s";
         }
 
         function renderNextBatch(reset = false) {
@@ -377,13 +286,8 @@
             const sentinel = document.getElementById('loading-sentinel');
             if (reset) { container.innerHTML = ""; currentIndex = 0; }
             if (isLoading) return;
-            
             const chunk = filteredData.slice(currentIndex, currentIndex + 10);
-            if (chunk.length === 0) {
-                sentinel.innerHTML = currentIndex > 0 ? "نهاية الأرشيف" : "لا توجد أخبار حالياً";
-                return;
-            }
-
+            if (chunk.length === 0) { sentinel.innerHTML = currentIndex > 0 ? "نهاية الأرشيف" : "لا توجد أخبار حالياً"; return; }
             isLoading = true;
             let html = chunk.map(item => `
                 <div class="card">
@@ -392,23 +296,22 @@
                     <div class="title">${item.title}</div>
                     ${item.img ? `<img src="${item.img}" class="card-image" onerror="this.style.display='none'">` : ""}
                     <p>${item.content}</p>
+                    <div class="card-footer">
+                        ${item.linkURL ? `<span class="more-prefix">المصدر:</span><a href="${item.linkURL}" target="_blank" class="card-more-link">${item.linkText || 'إضغط هنا'}</a>` : ''}
+                    </div>
                 </div>`).join('');
-            
             container.insertAdjacentHTML('beforeend', html);
-            currentIndex += 10;
-            isLoading = false;
-            sentinel.innerHTML = "تحميل المزيد...";
+            currentIndex += 10; isLoading = false; sentinel.innerHTML = "تحميل المزيد...";
         }
 
         function setupInfiniteScroll() {
-            const observer = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && !isLoading) renderNextBatch();
-            }, { threshold: 0.1 });
+            const observer = new IntersectionObserver((entries) => { if (entries[0].isIntersecting && !isLoading) renderNextBatch(); }, { threshold: 0.1 });
             observer.observe(document.getElementById('loading-sentinel'));
         }
 
-        function handleSearch() {
-            applyFilter();
+        function handleSearch() { 
+            currentIndex = 0; // تصفير عند البحث أيضاً
+            applyFilter(); 
         }
     </script>
 </body>
