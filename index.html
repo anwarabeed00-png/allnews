@@ -32,6 +32,8 @@
         .login-card input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: #0d1117; color: white; box-sizing: border-box; font-size: 16px; }
         .login-btn { width: 100%; padding: 14px; background: var(--gold); color: #000; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 17px; margin-top: 15px; }
 
+
+
         /* --- الهيدر العلوي --- */
         .nav-bar { 
             background: var(--card-bg); 
@@ -105,6 +107,71 @@
         #loading-sentinel { text-align: center; padding: 20px; color: var(--gold); font-weight: bold; }
 
         @media (max-width: 600px) { .nav-bar { padding: 0 10px; } .main-title { font-size: 18px; } .title { padding-left: 70px; } .active-section-name { display: none; } }
+
+/* تنسيق شريط الطقس */
+.weather-ticker {
+    background-color: var(--bg); /* نفس خلفية الموقع */
+    color: var(--gold); /* اللون الذهبي الخاص بك */
+    height: 35px; /* ارتفاع نحيف وناعم */
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    position: sticky;
+    top: 0;
+    z-index: 10001; /* أعلى من كل العناصر */
+}
+
+/* تعديل الهيدر الحالي ليكون تحت شريط الطقس */
+.nav-bar {
+    top: 35px !important; /* إزاحة الهيدر للأسفل بمقدار ارتفاع شريط الطقس */
+}
+
+/* تعديل شريط الأخبار الحالي ليكون تحت الهيدر */
+.ticker-wrap {
+    top: calc(var(--nav-height) + 35px) !important;
+}
+
+.weather-ticker {
+    background-color: var(--bg);
+    color: var(--gold);
+    height: 35px;
+    display: flex;
+    align-items: center;
+    overflow: hidden; /* إخفاء الأجزاء الخارجة عن الشاشة */
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10001;
+    direction: ltr; /* لضمان حساب المسافات من اليسار لليمين بدقة */
+}
+
+.weather-track {
+    display: flex;
+    width: max-content; /* هام جداً: يجعل عرض الحاوية مساوياً لطول النص الفعلي */
+    animation: scrollWeather 40s linear infinite; /* سرعة هادئة */
+}
+
+@keyframes scrollWeather {
+    /* التحريك من البداية (0) إلى منتصف المحتوى المكرر بالضبط */
+    100% { transform: translateX(0%); }
+    0% { transform: translateX(-50%); } 
+}
+
+.weather-city-item {
+    padding: 0 40px; /* مسافة ثابتة بين المدن لضمان التباعد */
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* توقف الشريط عند وقوف الماوس (Hover) */
+.weather-ticker:hover .weather-track {
+    animation-play-state: paused;
+}
+
     </style>
 </head>
 <body>
@@ -132,6 +199,12 @@
     </div>
 
     <div id="main-content">
+        <!-- شريط طقس المدن الليبية الجديد -->
+<div class="weather-ticker">
+    <div class="weather-track" id="weatherTrack">
+        جاري جلب بيانات الطقس لمدن ليبيا...
+    </div>
+</div>
         <header class="nav-bar">
             <div class="right-section">
                 <div class="logo-header-box">
@@ -313,6 +386,45 @@
             currentIndex = 0; // تصفير عند البحث أيضاً
             applyFilter(); 
         }
+
+        // إعدادات جلب الطقس للمدن الليبية
+const weatherApiKey = "397d303d3f4447ac2304075b6f157a86";
+const libyaCities = ["Tripoli", "Benghazi", "Misrata", "Bayda", "Tobruk", "Sabha"];
+
+async function updateLibyaWeather() {
+        try {
+            const track = document.getElementById('weatherTrack');
+            const weatherPromises = libyaCities.map(city => 
+                fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},LY&appid=${weatherApiKey}&units=metric&lang=ar`)
+                .then(res => res.json())
+            );
+
+            const results = await Promise.all(weatherPromises);
+            
+            let weatherHTML = results.map(data => {
+                if (data.main) {
+                    return `
+                    <div class="weather-city-item">
+                        <span>🌡️ ${Math.round(data.main.temp)}°م</span>
+                        <span>☁️ ${data.weather[0].description}</span>
+                        <span>📍 ${data.name}</span>
+                    </div>`;
+                }
+                return '';
+            }).join('');
+
+            track.innerHTML = weatherHTML + weatherHTML;
+            
+        } catch (error) {
+            console.error("تعذر جلب بيانات الطقس عند الإقلاع");
+        }
+    }
+
+// تشغيل الوظيفة فوراً عند فتح المنصة
+updateLibyaWeather();
+
+// تحديث البيانات تلقائياً كل 5 ثوانٍ كما طلبت
+// setInterval(updateLibyaWeather, 5000);
     </script>
 </body>
 </html>
