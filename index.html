@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصة كل الأخبار - All News</title>
+
+<!-- مكتبات الخريطة الجيوسياسية -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+
     <style>
         :root { 
             --main-width: 900px; 
@@ -107,6 +114,46 @@
         #loading-sentinel { text-align: center; padding: 20px; color: var(--gold); font-weight: bold; }
 
         @media (max-width: 600px) { .nav-bar { padding: 0 10px; } .main-title { font-size: 18px; } .title { padding-left: 70px; } .active-section-name { display: none; } }
+
+        /* أنيميشن شريط الخريطة */
+@keyframes map-ticker-move {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(100%); }
+}
+#map-ticker-content:hover { animation-play-state: paused; }
+.news-item { display: inline-block; margin-left: 60px; font-size: 14px; }
+.separator { color: var(--border); margin: 0 10px; }
+
+/* أنيميشن نقاط الخريطة التفاعلية */
+.ripple-marker { display: flex; justify-content: center; align-items: center; }
+.ripple-core { width: 6px; height: 6px; border-radius: 50%; position: absolute; }
+.ripple-wave {
+    width: 6px; height: 6px; border-radius: 50%; position: absolute;
+    border: 1px solid; animation: ripple-simple 2s infinite;
+}
+@keyframes ripple-simple { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(4); opacity: 0; } }
+
+.important-dot { display: flex; justify-content: center; align-items: center; }
+.dot-core {
+    width: 9px; height: 9px; border-radius: 50%;
+    position: absolute; z-index: 10; border: 1.5px solid #fff; 
+    box-shadow: 0 0 8px rgba(255,255,255,0.5);
+}
+.white-flash {
+    width: 10px; height: 10px; border-radius: 50%;
+    position: absolute; z-index: 9; 
+    background: #ffffff; 
+    filter: blur(3px);
+    animation: white-flash-anim 1s infinite alternate;
+}
+@keyframes white-flash-anim { 0% { transform: scale(1); opacity: 0.2; } 100% { transform: scale(3.5); opacity: 0.7; } }
+
+/* تنسيق النوافذ المنبثقة داخل الخريطة لتناسب ثيم الموقع */
+.leaflet-popup-content-wrapper { background: var(--card-bg) !important; color: #fff !important; border: 1px solid var(--border) !important; border-radius: 8px !important; }
+.leaflet-popup-tip { background: var(--card-bg) !important; border: 1px solid var(--border) !important; }
+.popup-container { padding: 5px; text-align: right; min-width: 160px; line-height: 1.6; direction: rtl; }
+.popup-title { font-weight: bold; font-size: 15px; border-bottom: 1px solid var(--border); margin-bottom: 6px; display: block; padding-bottom: 4px; }
+.popup-row { font-size: 13px; color: #c9d1d9; }
 
 /* تنسيق شريط الطقس */
 .weather-ticker {
@@ -226,6 +273,7 @@
                 <button class="nav-btn" onclick="switchSection('analysis-section', this, 'تحليل أخباري')">تحليل أخباري</button>
                 <button class="nav-btn" onclick="switchSection('opinions-section', this, 'مقالات وآراء')">مقالات وآراء</button>
                 <button class="nav-btn" onclick="switchSection('files-section', this, 'ملفات خاصة')">ملفات خاصة</button>
+                <button class="nav-btn" onclick="switchSection('giomap', this, 'الخريطة الجيوسياسية')">الخريطة الجيوسياسية</button>
             </div>
         </header>
 
@@ -246,6 +294,9 @@
             <div id="analysis-section" class="page-section"><div style="padding:50px; text-align:center; color:#8b949e;">قريباً.. تحليل أخباري</div></div>
             <div id="opinions-section" class="page-section"><div style="padding:50px; text-align:center; color:#8b949e;">قريباً.. مقالات وآراء</div></div>
             <div id="files-section" class="page-section"><div style="padding:50px; text-align:center; color:#8b949e;">قريباً.. ملفات خاصة</div></div>
+
+
+            
         </main>
     </div>
 
@@ -425,6 +476,151 @@ updateLibyaWeather();
 
 // تحديث البيانات تلقائياً كل 5 ثوانٍ كما طلبت
 // setInterval(updateLibyaWeather, 5000);
+
+// متغيرات الخريطة الجيوسياسية
+let geoMapInstance = null;
+const GEO_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQuJTi1AS4y4r42nuYtXMtkPOJ2m0oCN58LEeM191fuur_ATlkufcp69HmHSPkAWiiixWlLCMJo-kkq/pub?output=csv';
+
+function initGeoMap() {
+    // بناء الخريطة مرة واحدة فقط لمنع الأخطاء البرمجية
+    if (geoMapInstance) {
+        setTimeout(() => geoMapInstance.invalidateSize(), 100);
+        return;
+    }
+
+    geoMapInstance = L.map('leaflet-map', { zoomControl: true }).setView([20, 0], 2);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(geoMapInstance);
+
+    Papa.parse(GEO_CSV_URL, {
+        download: true,
+        header: true,
+        complete: function(results) {
+            const data = results.data.filter(r => r.cord && r.date);
+            
+            const parseDate = (str) => {
+                const p = str.split(/[\/-]/);
+                return new Date(p[2], p[1]-1, p[0]);
+            };
+            
+            const sortedData = [...data].sort((a, b) => parseDate(b.date) - parseDate(a.date));
+            const latestDateStr = sortedData.length > 0 ? sortedData[0].date : null;
+
+            const markers = L.featureGroup();
+            const focusGroup = L.featureGroup();
+            let tickerContentHtml = "";
+
+            data.forEach(row => {
+                const coords = row.cord.split(',');
+                if (coords.length === 2) {
+                    let lat = parseFloat(coords[0].trim());
+                    let lng = parseFloat(coords[1].trim());
+
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        const isImportant = (row.date === latestDateStr);
+                        const color = row.color || 'cyan';
+
+                        if (isImportant) {
+                            tickerContentHtml += `
+                                <span class="news-item">
+                                    <b style="color:${color}">${row.sitename}</b> 
+                                    <span class="separator">|</span> 
+                                    <span>${row['at-type']}</span> 
+                                    <span class="separator">|</span> 
+                                    <span style="color:#00ffcc">${row.time}</span>
+                                </span>`;
+                        }
+
+                        const icon = L.divIcon({
+                            className: isImportant ? 'important-dot' : 'ripple-marker',
+                            html: isImportant ? 
+                                `<div class="white-flash"></div><div class="dot-core" style="background-color:${color}"></div>` :
+                                `<div class="ripple-wave" style="border-color:${color}"></div><div class="ripple-core" style="background-color:${color}"></div>`,
+                            iconSize: [30, 30],
+                            iconAnchor: [15, 15]
+                        });
+
+                        const marker = L.marker([lat, lng], { icon: icon, zIndexOffset: isImportant ? 1000 : 0 });
+                        
+                        marker.bindPopup(`
+                            <div class="popup-container">
+                                <span class="popup-title" style="color:${color}">${row.sitename}</span>
+                                <div class="popup-row"><b>النوع:</b> ${row['at-type']}</div>
+                                <div class="popup-row"><b>التاريخ:</b> ${row.date}</div>
+                                <div class="popup-row"><b>الوقت:</b> ${row.time}</div>
+                            </div>
+                        `);
+                        
+                        marker.addTo(markers);
+                        if (isImportant) marker.addTo(focusGroup);
+                    }
+                }
+            });
+
+            markers.addTo(geoMapInstance);
+            
+            // تحديث شريط الأخبار الخاص بالخريطة
+            const tickerEl = document.getElementById('map-ticker-content');
+            if(tickerContentHtml !== "") {
+                tickerEl.innerHTML = tickerContentHtml;
+                const textWidth = tickerEl.scrollWidth;
+                const duration = textWidth / 50; 
+                tickerEl.style.animationDuration = Math.max(25, duration) + "s";
+            }
+            
+            // التركيز على النقاط الأخيرة
+            if (focusGroup.getLayers().length > 0) {
+                geoMapInstance.fitBounds(focusGroup.getBounds(), { padding: [50, 50], maxZoom: 5 });
+            }
+        }
+    });
+}
+
+// تعديل الدالة الحالية للموقع لتقوم بتشغيل الخريطة عند الضغط على زر القائمة
+const originalSwitchSection = switchSection;
+switchSection = function(sectionId, btn, sectionName) {
+    // إخفاء الخريطة أولاً كإجراء احترازي عند التنقل بين الأقسام الأخرى
+    document.getElementById('giomap').style.display = 'none';
+    
+    // تشغيل الدالة الأصلية للموقع لباقي الأقسام
+    originalSwitchSection(sectionId, btn, sectionName);
+    
+    // إذا اختار المستخدم الخريطة الجيوسياسية
+    if (sectionId === 'giomap') {
+        const mapSection = document.getElementById('giomap');
+        mapSection.style.display = 'block'; // إظهار الحاوية المستقلة
+        
+        // تشغيل وبناء الخريطة بداخلها
+        initGeoMap();
+        
+        // إجبار مكتبة Leaflet على التمدد الكامل فوراً بدون أي أخطاء
+        setTimeout(() => {
+            if (geoMapInstance) {
+                geoMapInstance.invalidateSize();
+            }
+        }, 250);
+    }
+}
     </script>
+
+
+<!-- قسم الخريطة الجيوسياسية المطوّر ليملأ كامل الشاشة طولاً وعرضاً -->
+<<!-- قسم الخريطة الجيوسياسية - تم تعديل الـ top والـ height لظهور الشريط الإخباري كاملاً -->
+<div id="giomap" class="page-section" style="display: none; position: fixed; top: 165px; left: 0; width: 100vw; height: calc(100vh - 135px); z-index: 998; background: #0d1117; box-sizing: border-box; padding: 0; margin: 0;">
+    <div style="width: 100%; height: 100%; display: flex; flex-direction: column; border-right: 5px solid var(--gold); box-sizing: border-box;">
+        
+        <!-- الشريط الإخباري الخاص بالخريطة - ظاهر الآن ومحمي تماماً من الاختفاء -->
+        <div id="map-news-ticker" style="width: calc(100% - 20px); height: 40px; background: rgba(22, 27, 34, 0.95); border-bottom: 1px solid var(--border); display: flex; align-items: center; overflow: hidden; white-space: nowrap; margin: 10px auto; border-radius: 6px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+            <div id="map-ticker-content" style="display: inline-block; white-space: nowrap; padding-right: 100%; animation: map-ticker-move linear infinite; will-change: transform; color: #fff;">
+                جاري جلب أحدث البيانات الجيوسياسية...
+            </div>
+        </div>
+
+        <!-- حاوية الخريطة التفاعلية -->
+        <div id="leaflet-map" style="flex-grow: 1; width: 100%; background: #0d1117;"></div>
+    </div>
+</div>
+
+
+
 </body>
 </html>
