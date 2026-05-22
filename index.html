@@ -578,27 +578,32 @@ function initGeoMap() {
 // تعديل الدالة الحالية للموقع لتقوم بتشغيل الخريطة عند الضغط على زر القائمة
 const originalSwitchSection = switchSection;
 switchSection = function(sectionId, btn, sectionName) {
-    // إخفاء الخريطة أولاً كإجراء احترازي عند التنقل بين الأقسام الأخرى
-    document.getElementById('giomap').style.display = 'none';
+    // إخفاء حاوية الخريطة تماماً لمنعها من تغطية الشاشة
+    const mapSection = document.getElementById('giomap');
+    if (mapSection) mapSection.style.display = 'none';
     
-    // تشغيل الدالة الأصلية للموقع لباقي الأقسام
+    // تشغيل التبديل العادي للأقسام
     originalSwitchSection(sectionId, btn, sectionName);
     
-    // إذا اختار المستخدم الخريطة الجيوسياسية
+    // إذا كان القسم المطلوب هو الخريطة، أظهرها وقم بتحديث أبعادها
     if (sectionId === 'giomap') {
-        const mapSection = document.getElementById('giomap');
-        mapSection.style.display = 'block'; // إظهار الحاوية المستقلة
-        
-        // تشغيل وبناء الخريطة بداخلها
+        if (mapSection) mapSection.style.display = 'block';
         initGeoMap();
-        
-        // إجبار مكتبة Leaflet على التمدد الكامل فوراً بدون أي أخطاء
         setTimeout(() => {
-            if (geoMapInstance) {
-                geoMapInstance.invalidateSize();
-            }
+            if (geoMapInstance) geoMapInstance.invalidateSize();
         }, 250);
     }
+}
+
+// 2. تحديث دالة تبويب الأخبار (أخبار ليبيا / الدولية) لتجبر الخريطة على الاختفاء أيضاً
+const originalSwitchNewsTab = switchNewsTab;
+switchNewsTab = function(mode, sectionName) {
+    // إخفاء الخريطة فوراً عند العودة للأخبار
+    const mapSection = document.getElementById('giomap');
+    if (mapSection) mapSection.style.display = 'none';
+    
+    // تشغيل دالة تبديل الأخبار الأصلية بكفاءة
+    originalSwitchNewsTab(mode, sectionName);
 }
     </script>
 
